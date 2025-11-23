@@ -1,13 +1,41 @@
 from flask import Flask, jsonify, render_template, request, session, redirect, url_for, abort
-import psycopg2
-conn = psycopg2.connect(database="demo", user="postgres",
-                        password="1234", host="localhost", port=5432)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Mapped, mapped_column
+from flask_migrate import Migrate
 
-cur = conn.cursor()
-cur.execute("SELECT version();")
-records = cur.fetchall()
 
-app = Flask(__name__)
+# import psycopg2
+# conn = psycopg2.connect(database="demo", user="postgres",
+#                         password="1234", host="localhost", port=5432)
+
+# cursor = conn.cursor()
+
+# cur.execute(""" CREATE TABLE cursos(
+#             curso_id SERIAL PRIMARY KEY,
+#             curso_nombre VARCHAR(50) NOT NULL,
+#             curso_instructor VARCHAR(50) NOT NULL,
+#             curso_topico VARCHAR(100) NOT NULL);
+# """)
+
+# cursor.execute("""Insert INTO cursos
+#                (curso_nombre,
+#                curso_instructor,
+#                 curso_topico)
+#                VALUES (
+#                'Fundamentod de Python',
+#                'Raul Perez',
+#                 'programacion'
+#                );
+#                """)
+# cursor.execute("SELECT * FROM cursos;")
+# filas = cursor.fetchall()
+# conn.commit()
+# cursor.close()
+# conn.close()
+
+# for fila in filas:
+#     print(fila)
+# app = Flask(__name__)
 
 app.secret_key = '528522875de1ca5ba18ec77af480e0d66a65a810b4bada578cb91f8850fba49a'
 

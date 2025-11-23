@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Cursos</title>
+</head>
+
+<body>
+    <h1>Bienvenvenido {{usuario}} este es el Listado de Cursos disponible </h1>
+    <div>
+        Cantidad de Cursos: {{ total }}
+    </div>
+    <div>
+        Cursos Disponibles:
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Curso</th>
+                    <th>Instructor</th>
+                    <th>Tópico</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for curso in datos %}
+                <tr>
+                    <td>{{ curso.id }}</td>
+                    <td>{{ curso.nombre }}</td>
+                    <td>{{ curso.instructor }}</td>
+                    <td>{{ curso.topico }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

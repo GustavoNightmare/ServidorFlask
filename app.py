@@ -1,9 +1,9 @@
 from flask import Flask, jsonify, render_template, request, session, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from flask_migrate import Migrate
 
-
+# CONEXION CON POSTGRESS CON PSYCOG2
 # import psycopg2
 # conn = psycopg2.connect(database="demo", user="postgres",
 #                         password="1234", host="localhost", port=5432)
@@ -35,15 +35,56 @@ from flask_migrate import Migrate
 
 # for fila in filas:
 #     print(fila)
-# app = Flask(__name__)
+
+app = Flask(__name__)
 
 app.secret_key = '528522875de1ca5ba18ec77af480e0d66a65a810b4bada578cb91f8850fba49a'
+
+# Conexion a Base de Datos con SQLAlchemy y PostgreSQL
+
+USER_DB = 'postgres'
+USER_PASSWORD = '1234'
+SERVER_DB = 'localhost'
+NAME_DB = 'demo'
+
+FULL_URL_DB = f'postgresql://{USER_DB}:{USER_PASSWORD}@{SERVER_DB}/{NAME_DB}'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = FULL_URL_DB
+
+db = SQLAlchemy(app)
+
+# Migrar el modelo
+
+migrate = Migrate(app, db)
+
+
+class Cursos(db.Model):
+    __tablename__ = 'cursos'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(
+        db.String(50), unique=True, nullable=False)
+    instructor: Mapped[str] = mapped_column(db.String(50), nullable=False)
+    topico: Mapped[str] = mapped_column(db.String(100), nullable=False)
+
+    def __str__(self):
+        return (
+            f'Curso(id={self.id}, '
+            f'nombre={self.nombre}, '
+            f'instructor={self.instructor}, '
+            f'topico={self.topico})'
+        )
+# flask db init
+# flask db migrate
+# flask db upgrade
 
 
 @app.route('/')
 def inicio():
+    cursos = Cursos.query.all()
+    total_cursos = Cursos.query.count()
     if 'username' in session:
-        return f'Usuario ya logueado como {session["username"]}'
+        return render_template('index.html', usuario=session['username'], datos=cursos, total=total_cursos)
     return 'No Inicio session'
 
 

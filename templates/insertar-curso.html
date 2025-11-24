@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertar Curso</title>
+</head>
+
+<body>
+    <h1>Insertar un curso</h1>
+    <form method="POST">
+        {{formulario.csrf_token}}
+        <div>
+            {{formulario.nombre.label}}
+            {{formulario.nombre(size=30)}}
+        </div>
+        <div>
+            {{formulario.instructor.label}}
+            {{formulario.instructor(size=30)}}
+        </div>
+        <div>
+            {{formulario.topico.label}}
+            {{formulario.topico(size=30)}}
+        </div>
+        <div>
+            {{formulario.enviar(size=50)}}
+
+        </div>
+    </form>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de {{curso.nombre}}</title>
+</head>
+
+<body>
+    <h1>Detalles del Curso de {{curso.nombre}} </h1>
+    <p> Este curso consta de </p>
+    {% if curso.id==1 %}
+    <p> Programacion con Python </p>
+    {% else %}
+    <p> Programacion para Bases de datos con MysqL postgrest etc </p>
+    {% endif %}
+    <div>
+        Id: {{curso.id}}
+    </div>
+    <div>
+        Instructor: {{curso.instructor}}
+    </div>
+    <div> Curso : {{curso.nombre}}</div>
+    <div> Topico : {{curso.topico}}</div>
+    <a href="{{url_for('inicio')}}"> Volver </a>
+</body>
+
+</html>

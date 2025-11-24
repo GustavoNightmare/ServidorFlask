@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request, session, redirect, u
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Mapped, mapped_column
 from flask_migrate import Migrate
+from forms import CursoForm
 
 # CONEXION CON POSTGRESS CON PSYCOG2
 # import psycopg2
@@ -36,26 +37,7 @@ from flask_migrate import Migrate
 # for fila in filas:
 #     print(fila)
 
-app = Flask(__name__)
-
-app.secret_key = '528522875de1ca5ba18ec77af480e0d66a65a810b4bada578cb91f8850fba49a'
-
-# Conexion a Base de Datos con SQLAlchemy y PostgreSQL
-
-USER_DB = 'postgres'
-USER_PASSWORD = '1234'
-SERVER_DB = 'localhost'
-NAME_DB = 'demo'
-
-FULL_URL_DB = f'postgresql://{USER_DB}:{USER_PASSWORD}@{SERVER_DB}/{NAME_DB}'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = FULL_URL_DB
-
-db = SQLAlchemy(app)
-
-# Migrar el modelo
-
-migrate = Migrate(app, db)
+db = SQLAlchemy()
 
 
 class Cursos(db.Model):
@@ -74,14 +56,40 @@ class Cursos(db.Model):
             f'instructor={self.instructor}, '
             f'topico={self.topico})'
         )
+
+
+app = Flask(__name__)
+
+app.secret_key = '528522875de1ca5ba18ec77af480e0d66a65a810b4bada578cb91f8850fba49a'
+
+# Conexion a Base de Datos con SQLAlchemy y PostgreSQL
+
+USER_DB = 'postgres'
+USER_PASSWORD = '1234'
+SERVER_DB = 'localhost'
+NAME_DB = 'demo'
+
+FULL_URL_DB = f'postgresql://{USER_DB}:{USER_PASSWORD}@{SERVER_DB}/{NAME_DB}'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = FULL_URL_DB
+
+
+# Migrar el modelo
+db.init_app(app)
+
+
+migrate = Migrate(app, db)
+
+
 # flask db init
 # flask db migrate
 # flask db upgrade
+# flask db stamp head
 
 
 @app.route('/')
 def inicio():
-    cursos = Cursos.query.all()
+    cursos = Cursos.query.order_by('id').all()
     total_cursos = Cursos.query.count()
     if 'username' in session:
         return render_template('index.html', usuario=session['username'], datos=cursos, total=total_cursos)
@@ -102,6 +110,13 @@ def logout():
     return redirect(url_for('inicio'))
 
 
+@app.route('/curso/<int:id>')
+def ver_curso(id):
+    curso = Cursos.query.get(id)
+    # return render_template('curso.html', curso=curso)
+    return render_template('curso.html', curso=curso)
+
+
 @app.route('/saludar/<nombre>')
 def saludar(nombre):
     return f"¡Hola, {nombre}!"
@@ -111,6 +126,18 @@ def saludar(nombre):
 @app.route('/saludar')
 def saludogeneral():
     return "¡Hola, Usuario , como te encuentras hoy? !"
+
+
+@app.route('/insertar-curso', methods=['GET', 'POST'])
+def insertar_curso():
+    curso = Cursos()
+    cursoForm = CursoForm(obj=curso)
+    if request.method == 'POST' and cursoForm.validate_on_submit():
+        cursoForm.populate_obj(curso)
+        db.session.add(curso)
+        db.session.commit()
+        return redirect(url_for('inicio'))
+    return render_template('insertar-curso.html', formulario=cursoForm)
 
 
 @app.route('/edad/<int:edad>')
@@ -133,6 +160,17 @@ def error():
     return abort(404)
 
 
+@app.route('/editar-curso/<int:id>', methods=['GET', 'POST'])
+def editar_curso(id):
+    curso = Cursos.query.get_or_404(id)
+    cursoForm = CursoForm(obj=curso)
+    if request.method == 'POST' and cursoForm.validate_on_submit():
+        cursoForm.populate_obj(curso)
+        db.session.commit()
+        return redirect(url_for('inicio'))
+    return render_template('editar-curso.html', curso=curso, formulario=cursoForm)
+
+
 @app.errorhandler(404)
 def pagina_no_encontrada(error):
     return render_template('404.html', error=error), 404
@@ -141,6 +179,14 @@ def pagina_no_encontrada(error):
 @app.route('/datos/<valor>', methods=['GET', 'POST'])
 def mostrar_datos(valor):
     return f'Datos recibidos: {valor} '
+
+
+@app.route('/eliminar-curso/<int:id>', methods=['GET', 'POST'])
+def eliminar_curso(id):
+    curso = Cursos.query.get_or_404(id)
+    db.session.delete(curso)
+    db.session.commit()
+    return redirect(url_for('inicio'))
 
 
 if __name__ == '__main__':

@@ -21,6 +21,9 @@
                     <th>Curso</th>
                     <th>Instructor</th>
                     <th>Tópico</th>
+                    <th>Link del Curso</th>
+                    <th>Editar Curso</th>
+                    <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,9 +33,15 @@
                     <td>{{ curso.nombre }}</td>
                     <td>{{ curso.instructor }}</td>
                     <td>{{ curso.topico }}</td>
+                    <td><a href="{{ url_for('ver_curso', id=curso.id) }}">Ver Curso</a></td>
+                    <td><a href="editar-curso/{{curso.id}}">Edita el curso </a> </td>
+                    <td><a href="eliminar-curso/{{curso.id}}">Eliminar curso </a> </td>
                 </tr>
                 {% endfor %}
             </tbody>
+            <h2>
+                <a href="{{ url_for('insertar_curso') }}"> Insertar nuevo curso </a>
+            </h2>
         </table>
     </div>
 </body>
